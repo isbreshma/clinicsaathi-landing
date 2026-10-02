@@ -1,1 +1,950 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ClinicSaathi – Demo Landing Page</title>
+<meta name="description" content="ClinicSaathi: a simple English and Hindi website where patients can see a clinic's practical information. Demo project. Not a real clinic.">
+<style>
+  :root{
+    --bg:#f5f9fd;
+    --white:#ffffff;
+    --blue-50:#eaf3fc;
+    --blue-100:#d8e9f9;
+    --blue-300:#8fbbe6;
+    --blue-600:#2f6fb0;
+    --blue-700:#245a92;
+    --blue-900:#173b61;
+    --text:#1f2d3d;
+    --muted:#4d5f73;
+    --line:#d3e1ef;
+    --alert-bg:#fff1f0;
+    --alert-line:#c0392b;
+    --alert-text:#8a1f14;
+    --radius:16px;
+    --shadow:0 2px 10px rgba(36,90,146,.08);
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--text);
+    font-family:"Noto Sans","Noto Sans Devanagari","Mukta","Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif;
+    font-size:18px;
+    line-height:1.65;
+  }
+  img,svg{max-width:100%}
+  .wrap{width:100%;max-width:1040px;margin:0 auto;padding:0 18px}
+  section{padding:44px 0}
+  section.alt{background:var(--white);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+  h1,h2,h3{line-height:1.3;color:var(--blue-900);margin:0 0 .5em}
+  h1{font-size:1.85rem;letter-spacing:-.2px}
+  h2{font-size:1.55rem}
+  h3{font-size:1.15rem;margin-bottom:.3em}
+  p{margin:0 0 1em}
+  .eyebrow{
+    display:inline-block;font-size:.85rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+    color:var(--blue-700);background:var(--blue-100);padding:4px 12px;border-radius:999px;margin-bottom:14px;
+  }
+  .lead{font-size:1.1rem;color:var(--muted)}
+  /* Devanagari looks best without extra letter-spacing or forced capitals */
+  html[lang="hi"] h1{letter-spacing:0}
+  html[lang="hi"] .eyebrow,html[lang="hi"] dt{letter-spacing:0;text-transform:none}
+  html[lang="hi"] body{line-height:1.75}
 
+  /* Buttons */
+  .btn{
+    display:inline-flex;align-items:center;justify-content:center;gap:8px;
+    min-height:56px;padding:14px 26px;border:0;border-radius:14px;
+    background:var(--blue-600);color:#fff;font:inherit;font-weight:700;font-size:1.05rem;
+    text-decoration:none;cursor:pointer;box-shadow:0 3px 0 var(--blue-700);
+    width:100%;
+  }
+  .btn:hover{background:var(--blue-700)}
+  .btn:active{transform:translateY(2px);box-shadow:0 1px 0 var(--blue-700)}
+  :focus-visible{outline:3px solid #ffb703;outline-offset:3px}
+
+  /* Header */
+  header.top{background:var(--white);border-bottom:1px solid var(--line)}
+  header.top .wrap{display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:68px}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:800;color:var(--blue-900);font-size:1.15rem;text-decoration:none;white-space:nowrap}
+  .logo{width:34px;height:34px;border-radius:10px;background:var(--blue-600);display:grid;place-items:center;flex:none}
+  .head-right{display:flex;align-items:center;gap:10px}
+  .tag{font-size:.78rem;font-weight:700;color:var(--blue-700);background:var(--blue-50);border:1px solid var(--blue-100);padding:3px 10px;border-radius:999px}
+
+  /* Language toggle */
+  .lang-toggle{display:inline-flex;border:2px solid var(--blue-600);border-radius:12px;overflow:hidden;background:var(--white)}
+  .lang-btn{
+    min-height:44px;min-width:56px;padding:0 14px;border:0;background:var(--white);color:var(--blue-700);
+    font:inherit;font-weight:700;font-size:.98rem;cursor:pointer;
+  }
+  .lang-btn + .lang-btn{border-left:2px solid var(--blue-600)}
+  .lang-btn[aria-pressed="true"]{background:var(--blue-600);color:#fff}
+  .lang-btn:not([aria-pressed="true"]):hover{background:var(--blue-50)}
+  .lang-btn:focus-visible{outline-offset:-3px}
+
+  /* Hero */
+  .hero{padding:36px 0 44px;background:linear-gradient(180deg,var(--blue-50) 0%,var(--bg) 100%)}
+  .hero .sub{font-size:1.12rem;color:var(--muted);margin-bottom:24px}
+  .hero-note{margin-top:14px;font-size:.95rem;color:var(--muted)}
+
+  /* Cards & grids */
+  .grid{display:grid;gap:14px}
+  .card{
+    background:var(--white);border:1px solid var(--line);border-radius:var(--radius);
+    padding:20px;box-shadow:var(--shadow);
+  }
+  section.alt .card{background:var(--bg);box-shadow:none}
+  .icon{
+    width:46px;height:46px;border-radius:12px;background:var(--blue-100);color:var(--blue-700);
+    display:grid;place-items:center;margin-bottom:12px;font-size:1.4rem;
+  }
+  .card p{margin:0;color:var(--muted)}
+
+  /* Steps */
+  .steps{counter-reset:s;list-style:none;margin:0;padding:0;display:grid;gap:14px}
+  .steps li{
+    counter-increment:s;position:relative;background:var(--white);border:1px solid var(--line);
+    border-radius:var(--radius);padding:18px 18px 18px 74px;box-shadow:var(--shadow);
+  }
+  .steps li::before{
+    content:counter(s);position:absolute;left:18px;top:18px;width:42px;height:42px;border-radius:50%;
+    background:var(--blue-600);color:#fff;font-weight:800;font-size:1.2rem;display:grid;place-items:center;
+  }
+  .steps strong{display:block;color:var(--blue-900);font-size:1.1rem}
+  .steps span{color:var(--muted)}
+
+  /* Ask Saathi */
+  .saathi{
+    border:2px dashed var(--blue-300);border-radius:var(--radius);background:var(--blue-50);padding:20px;
+  }
+  .badge{display:inline-block;background:#ffe9a8;color:#6b4e00;font-weight:800;font-size:.85rem;padding:4px 12px;border-radius:999px;margin-bottom:12px}
+  .chat-demo{background:var(--white);border:1px solid var(--line);border-radius:14px;padding:14px;margin:14px 0}
+  .chat-demo .msg{background:var(--blue-50);border-radius:12px;padding:10px 14px;color:var(--muted);font-size:.98rem;margin-bottom:10px}
+  .chat-row{display:flex;gap:8px}
+  .chat-row input{flex:1;min-width:0}
+  .chat-row button{width:auto;min-width:84px;padding:0 16px;box-shadow:none}
+  input:disabled,button:disabled{background:#e9eef4;color:#7d8c9c;cursor:not-allowed;border-color:#d5dde6}
+  .chips{display:flex;flex-wrap:wrap;gap:8px;margin:0;padding:0;list-style:none}
+  .chips li{background:var(--white);border:1px solid var(--line);border-radius:999px;padding:6px 14px;font-size:.95rem;color:var(--muted)}
+  .nomed{
+    margin-top:16px;padding:14px 16px;border-radius:12px;background:var(--white);
+    border-left:6px solid var(--blue-600);font-weight:600;color:var(--blue-900);
+  }
+  .sr-only{position:absolute;left:-9999px}
+  .chat-log{display:flex;flex-direction:column;gap:10px;margin-bottom:12px}
+  .bubble{border-radius:12px;padding:10px 14px;font-size:1rem;line-height:1.5}
+  .bubble.you{background:var(--blue-50);align-self:flex-end;color:var(--blue-900)}
+  .bubble.bot{background:#f3f6f9;color:var(--text,#1f2d3d)}
+  .bubble.warn{background:var(--alert-bg);color:var(--alert-text);font-weight:700}
+  .saathi-stats{margin-top:12px;font-size:.95rem;color:var(--muted)}
+
+  /* Emergency (always bilingual) */
+  .emergency{padding:0}
+  .emergency .box{
+    background:var(--alert-bg);border:3px solid var(--alert-line);border-radius:var(--radius);
+    padding:22px 20px;margin:36px 0;display:flex;gap:14px;align-items:flex-start;
+  }
+  .emergency .sym{
+    flex:none;width:48px;height:48px;border-radius:50%;background:var(--alert-line);color:#fff;
+    display:grid;place-items:center;font-weight:900;font-size:1.6rem;
+  }
+  .emergency p{margin:0;color:var(--alert-text);font-size:1.2rem;font-weight:800;line-height:1.45}
+  .emergency p + p{margin-top:8px;padding-top:8px;border-top:1px solid rgba(192,57,43,.35)}
+
+  /* Details */
+  dl.details{margin:0;display:grid;gap:12px}
+  dl.details div{background:var(--white);border:1px solid var(--line);border-radius:14px;padding:14px 16px}
+  dt{font-size:.85rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--blue-700)}
+  dd{margin:2px 0 0;font-size:1.1rem;font-weight:600;color:var(--text)}
+  .map{
+    min-height:200px;border-radius:var(--radius);border:2px dashed var(--blue-300);
+    background:repeating-linear-gradient(45deg,var(--blue-50),var(--blue-50) 14px,#f2f8fe 14px,#f2f8fe 28px);
+    display:grid;place-items:center;text-align:center;padding:18px;color:var(--blue-700);font-weight:700;
+  }
+  .map small{display:block;font-weight:500;color:var(--muted)}
+  .sample{font-size:.9rem;color:var(--muted)}
+
+  /* Form */
+  form{background:var(--white);border:1px solid var(--line);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow)}
+  .field{margin-bottom:18px}
+  label{display:block;font-weight:700;margin-bottom:6px;color:var(--blue-900)}
+  label small{font-weight:500;color:var(--muted)}
+  input[type=text],input[type=tel],select,.chat-row input{
+    width:100%;min-height:56px;padding:12px 14px;font:inherit;font-size:1.05rem;
+    border:2px solid var(--line);border-radius:12px;background:#fff;color:var(--text);
+  }
+  input[type=text]:focus,input[type=tel]:focus,select:focus{border-color:var(--blue-600);outline:none;box-shadow:0 0 0 4px var(--blue-100)}
+  .consent{display:flex;gap:12px;align-items:flex-start;background:var(--blue-50);border-radius:12px;padding:14px}
+  .consent input{width:28px;height:28px;flex:none;margin-top:2px;accent-color:var(--blue-600)}
+  .consent label{margin:0;font-weight:500;color:var(--text);font-size:1rem}
+  .err{display:none;color:#a52a1d;font-weight:600;font-size:.95rem;margin-top:6px}
+  .field.bad .err{display:block}
+  .field.bad input,.field.bad select{border-color:#c0392b}
+  .thanks{
+    display:none;margin-top:18px;background:#e8f6ee;border:2px solid #4caf7d;color:#1d5c3a;
+    border-radius:14px;padding:16px;font-weight:700;
+  }
+  .thanks.show{display:block}
+  .form-note{font-size:.92rem;color:var(--muted);margin:14px 0 0}
+
+  /* Footer */
+  footer{background:var(--blue-900);color:#dbe8f6;padding:34px 0 40px;font-size:.98rem}
+  footer p{margin:0 0 .8em}
+  footer strong{color:#fff}
+  .demo-line{display:inline-block;margin-top:6px;padding:8px 14px;border:1px solid #5d84ad;border-radius:10px;font-weight:700;color:#fff}
+
+  /* Very small phones: give the language toggle the room */
+  @media (max-width:440px){
+    .tag{display:none}
+    .brand{font-size:1.05rem}
+    .lang-btn{padding:0 12px}
+  }
+
+  /* Bigger screens */
+  @media (min-width:700px){
+    body{font-size:19px}
+    section{padding:64px 0}
+    h1{font-size:2.5rem}
+    h2{font-size:1.9rem}
+    .hero{padding:64px 0 72px}
+    .hero .inner{max-width:760px}
+    .btn{width:auto}
+    .grid.cols3{grid-template-columns:repeat(3,1fr)}
+    .grid.cols2{grid-template-columns:repeat(2,1fr)}
+    .steps{grid-template-columns:repeat(3,1fr)}
+    .steps li{padding:76px 18px 18px}
+    .steps li::before{top:20px}
+    .two-col{display:grid;grid-template-columns:1fr 1fr;gap:22px;align-items:start}
+    dl.details{grid-template-columns:1fr 1fr}
+  }
+  @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+
+  /* ===== Creative theme: warm teal + saffron ===== */
+  :root{
+    --bg:#fffaf3;--blue-50:#e7f5f2;--blue-100:#cdeae4;--blue-300:#7cc4b8;
+    --blue-600:#0f7a73;--blue-700:#0b625c;--blue-900:#083f3b;
+    --text:#1c2b2a;--muted:#52615f;--line:#e6dfd2;
+    --saffron:#f5a524;--saffron-soft:#fff0d1;--coral:#ff7a59;
+    --shadow:0 6px 22px rgba(8,63,59,.10);
+  }
+  body{background:var(--bg)}
+  header.top{background:rgba(255,250,243,.92);backdrop-filter:blur(8px);position:sticky;top:0;z-index:10}
+  .logo{background:linear-gradient(135deg,var(--blue-600),#14a39a);box-shadow:0 3px 8px rgba(15,122,115,.35)}
+  .btn{background:linear-gradient(135deg,var(--blue-600),#129088);box-shadow:0 4px 0 var(--blue-900);transition:transform .15s}
+  .btn:hover{background:linear-gradient(135deg,var(--blue-700),var(--blue-600));transform:translateY(-1px)}
+  .btn:active{transform:translateY(3px);box-shadow:0 1px 0 var(--blue-900)}
+  .eyebrow{background:var(--saffron-soft);color:#8a5600;border:1px solid #f7d58f}
+  .tag{background:var(--saffron-soft);border-color:#f7d58f;color:#8a5600}
+
+  h2{position:relative;padding-bottom:14px}
+  h2::after{content:"";position:absolute;left:0;bottom:0;width:64px;height:6px;border-radius:6px;
+    background:linear-gradient(90deg,var(--saffron),var(--coral))}
+
+  /* Hero with illustration */
+  .hero{position:relative;overflow:hidden;
+    background:radial-gradient(circle at 85% 10%,#ffe7b3 0,rgba(255,231,179,0) 40%),
+               radial-gradient(circle at 5% 90%,#cdeae4 0,rgba(205,234,228,0) 45%),var(--bg)}
+  .hero .wrap{position:relative;z-index:1}
+  .hero h1{font-size:2rem}
+  .hero h1 em{font-style:normal;background:linear-gradient(transparent 62%,#ffd98a 62%);padding:0 .1em}
+  .hero-art{margin-top:26px;border-radius:24px;background:linear-gradient(180deg,#e3f4ef,#fff6e3);
+    border:1px solid var(--line);box-shadow:var(--shadow);padding:6px;overflow:hidden}
+  .hero-art svg{display:block;width:100%;height:auto}
+  .road{stroke-dasharray:10 12;animation:dash 14s linear infinite}
+  .sun{transform-origin:center;animation:pulse 5s ease-in-out infinite}
+  .bob{animation:bob 3s ease-in-out infinite}
+  @keyframes dash{to{stroke-dashoffset:-220}}
+  @keyframes pulse{50%{transform:scale(1.08)}}
+  @keyframes bob{50%{transform:translateY(-6px)}}
+
+  /* Cards with colour accents */
+  .card{border:1px solid var(--line);border-top:5px solid var(--blue-600);transition:transform .2s,box-shadow .2s}
+  .card:hover{transform:translateY(-4px);box-shadow:0 12px 28px rgba(8,63,59,.16)}
+  .grid .card:nth-child(2n){border-top-color:var(--saffron)}
+  .grid .card:nth-child(3n){border-top-color:var(--coral)}
+  .grid .card:nth-child(2n) .icon{background:var(--saffron-soft)}
+  .grid .card:nth-child(3n) .icon{background:#ffe3da}
+  .icon{width:54px;height:54px;border-radius:16px;font-size:1.6rem}
+  section.alt{background:linear-gradient(180deg,#ffffff,#f4fbf9)}
+  section.alt .card{background:#fff}
+
+  /* Problem section: pain-point cards slightly tilted for a hand-made feel */
+  @media (min-width:700px){
+    .grid.cols3 .card:nth-child(1){transform:rotate(-1deg)}
+    .grid.cols3 .card:nth-child(3){transform:rotate(1deg)}
+    .grid.cols3 .card:hover{transform:translateY(-4px) rotate(0)}
+  }
+
+  /* Steps */
+  .steps li{border-radius:20px;border:1px solid var(--line)}
+  .steps li::before{background:linear-gradient(135deg,var(--saffron),var(--coral));color:#fff;box-shadow:0 4px 10px rgba(245,165,36,.45)}
+
+  /* Ask Saathi */
+  .saathi{border:0;background:linear-gradient(135deg,#0f7a73,#0b4f4b);color:#fff;padding:26px 22px;
+    box-shadow:0 14px 34px rgba(8,63,59,.28);position:relative;overflow:hidden}
+  .saathi::before{content:"";position:absolute;right:-60px;top:-60px;width:200px;height:200px;border-radius:50%;
+    background:rgba(255,255,255,.08)}
+  .saathi p{color:#e6f6f3}
+  .badge{background:var(--saffron);color:#3d2700}
+  .chips li{background:rgba(255,255,255,.14);border-color:rgba(255,255,255,.3);color:#fff}
+  .chat-demo{background:#fff;color:var(--text);border-radius:20px;border:0}
+  .bubble.bot{background:var(--blue-50);color:var(--text);border-bottom-left-radius:4px}
+  .bubble.you{background:var(--saffron-soft);color:#4a3000;border-bottom-right-radius:4px}
+  .saathi-stats{color:var(--muted)}
+  .nomed{border-left-color:var(--saffron);color:var(--blue-900)}
+
+  /* Details & form */
+  dl.details div{border-left:5px solid var(--blue-300);border-radius:16px}
+  dl.details div:nth-child(even){border-left-color:var(--saffron)}
+  .map{border-color:var(--blue-300);background:
+    radial-gradient(circle at 30% 40%,#cdeae4 0 30px,transparent 31px),
+    radial-gradient(circle at 70% 60%,#ffe3a6 0 40px,transparent 41px),
+    repeating-linear-gradient(45deg,#f1faf8,#f1faf8 14px,#fffaf0 14px,#fffaf0 28px)}
+  form{border-radius:22px;border-top:6px solid var(--saffron)}
+  .consent{background:var(--saffron-soft)}
+
+  footer{background:linear-gradient(135deg,#083f3b,#0b2f2d)}
+
+  #chatForm{background:none;border:0;box-shadow:none;padding:0;border-radius:0}
+
+  /* Gentle scroll reveal (only when JS adds .js) */
+  .js .reveal{opacity:0;transform:translateY(18px);transition:opacity .6s ease,transform .6s ease}
+  .js .reveal.in{opacity:1;transform:none}
+
+  @media (min-width:700px){
+    .hero .wrap{display:grid;grid-template-columns:1.1fr .9fr;gap:36px;align-items:center}
+    .hero .inner{max-width:none}
+    .hero h1{font-size:2.6rem}
+    .hero-art{margin-top:0}
+  }
+  @media (prefers-reduced-motion:reduce){
+    .road,.sun,.bob{animation:none}
+    .js .reveal{opacity:1;transform:none;transition:none}
+    .card,.btn{transition:none}
+  }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="#top" aria-label="ClinicSaathi">
+      <span class="logo" aria-hidden="true">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+      </span>
+      ClinicSaathi
+    </a>
+    <div class="head-right">
+      <span class="tag" data-i18n="tag">Demo</span>
+      <div class="lang-toggle" role="group" aria-label="Language" data-i18n-aria="langAria">
+        <button type="button" class="lang-btn" data-lang="en" lang="en" aria-pressed="true">English</button>
+        <button type="button" class="lang-btn" data-lang="hi" lang="hi" aria-pressed="false">हिंदी</button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main id="top">
+
+  <!-- 1. HERO -->
+  <section class="hero" aria-labelledby="hero-h">
+    <div class="wrap">
+      <div class="inner">
+        <span class="eyebrow" data-i18n="eyebrow">Meerut &amp; nearby towns</span>
+        <h1 id="hero-h" data-i18n="heroTitle">Planning a clinic visit in Meerut? See the important information before you go.</h1>
+        <p class="sub" data-i18n="heroSub">Timings, fees, address and the documents to bring – all in one place, in simple language. Take a quick look before you travel.</p>
+        <a class="btn" href="#request" data-i18n="heroBtn">Request an Appointment</a>
+        <p class="hero-note" data-i18n="heroNote">You only need to share your name, phone number and preferred day. No medical details.</p>
+      </div>
+      <div class="hero-art" aria-hidden="true">
+        <svg viewBox="0 0 480 340" xmlns="http://www.w3.org/2000/svg" role="presentation">
+          <circle class="sun" cx="395" cy="62" r="34" fill="#ffc85a"/>
+          <circle cx="395" cy="62" r="50" fill="#ffc85a" opacity=".25"/>
+          <path d="M0 250 Q120 205 240 235 T480 215 V340 H0Z" fill="#cfeadf"/>
+          <path d="M0 290 Q140 255 260 280 T480 265 V340 H0Z" fill="#a9d9c9"/>
+          <path class="road" d="M60 300 C120 250 150 310 215 262 S330 236 395 258" fill="none" stroke="#f5a524" stroke-width="6" stroke-linecap="round"/>
+          <!-- village -->
+          <g transform="translate(18 196)">
+            <rect x="0" y="22" width="34" height="28" rx="3" fill="#ffb98a"/><path d="M-4 24 L17 4 L38 24Z" fill="#e56b4b"/>
+            <rect x="12" y="32" width="10" height="18" rx="2" fill="#8a4a2f"/>
+            <rect x="42" y="30" width="28" height="22" rx="3" fill="#ffd98a"/><path d="M38 32 L56 14 L74 32Z" fill="#c9582f"/>
+          </g>
+          <rect x="82" y="214" width="6" height="30" fill="#6b4a2f"/><circle cx="85" cy="208" r="16" fill="#3f9b6e"/>
+          <!-- clinic -->
+          <g transform="translate(330 150)">
+            <rect x="0" y="30" width="110" height="82" rx="8" fill="#ffffff" stroke="#0f7a73" stroke-width="4"/>
+            <rect x="-6" y="22" width="122" height="14" rx="6" fill="#0f7a73"/>
+            <rect x="44" y="66" width="22" height="46" rx="3" fill="#7cc4b8"/>
+            <rect x="12" y="48" width="22" height="18" rx="3" fill="#cdeae4"/><rect x="76" y="48" width="22" height="18" rx="3" fill="#cdeae4"/>
+            <circle cx="55" cy="8" r="22" fill="#ff7a59"/>
+            <path d="M55 -2 V18 M45 8 H65" stroke="#fff" stroke-width="6" stroke-linecap="round"/>
+          </g>
+          <!-- map pin -->
+          <g class="bob"><path d="M215 215 c-14 -22 -22 -33 -22 -44 a22 22 0 1 1 44 0 c0 11 -8 22 -22 44z" fill="#0f7a73"/><circle cx="215" cy="171" r="9" fill="#fff"/></g>
+        </svg>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2. PROBLEM -->
+  <section class="alt" aria-labelledby="problem-h">
+    <div class="wrap">
+      <h2 id="problem-h" data-i18n="probTitle">Travelling without information is tiring</h2>
+      <p class="lead" data-i18n="probLead">Families often travel from far-away towns and villages. Many only find out after they arrive that:</p>
+      <div class="grid cols3">
+        <div class="card">
+          <div class="icon" aria-hidden="true">&#128339;</div>
+          <h3 data-i18n="p1t">They don't know the timings</h3>
+          <p data-i18n="p1d">They don't know when the clinic opens or which days it is closed.</p>
+        </div>
+        <div class="card">
+          <div class="icon" aria-hidden="true">&#8377;</div>
+          <h3 data-i18n="p2t">They don't know the fees</h3>
+          <p data-i18n="p2d">Not knowing the consultation fee in advance adds to the worry.</p>
+        </div>
+        <div class="card">
+          <div class="icon" aria-hidden="true">&#128196;</div>
+          <h3 data-i18n="p3t">What should they bring?</h3>
+          <p data-i18n="p3d">If they forget which papers and old reports are needed, they have to make another trip.</p>
+        </div>
+      </div>
+      <p style="margin-top:20px" class="lead" data-i18n="probClose">ClinicSaathi helps you see the practical information you need before you leave home.</p>
+    </div>
+  </section>
+
+  <!-- 3. WHAT'S ON THIS WEBSITE -->
+  <section aria-labelledby="what-h">
+    <div class="wrap">
+      <h2 id="what-h" data-i18n="whatTitle">What you will find on this website</h2>
+      <p class="lead" data-i18n="whatLead">Five simple things, with no login and no hassle.</p>
+      <div class="grid cols3">
+        <div class="card">
+          <div class="icon" aria-hidden="true">&#129489;&#8205;&#9877;&#65039;</div>
+          <h3 data-i18n="w1t">Doctor's profile</h3>
+          <p data-i18n="w1d">Clear, direct information about the doctor.</p>
+        </div>
+        <div class="card">
+          <div class="icon" aria-hidden="true">&#128205;</div>
+          <h3 data-i18n="w2t">Address and map</h3>
+          <p data-i18n="w2d">How to reach the clinic – the address and a map in one place.</p>
+        </div>
+        <div class="card">
+          <div class="icon" aria-hidden="true">&#128337;</div>
+          <h3 data-i18n="w3t">Timings</h3>
+          <p data-i18n="w3d">Which days, and from what time to what time.</p>
+        </div>
+        <div class="card">
+          <div class="icon" aria-hidden="true">&#8377;</div>
+          <h3 data-i18n="w4t">Fees</h3>
+          <p data-i18n="w4d">Know the consultation fee in advance, with no surprise costs.</p>
+        </div>
+        <div class="card">
+          <div class="icon" aria-hidden="true">&#128209;</div>
+          <h3 data-i18n="w5t">Documents to bring</h3>
+          <p data-i18n="w5d">A single list of what to keep with you before you come.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. HOW TO REQUEST -->
+  <section class="alt" aria-labelledby="how-h">
+    <div class="wrap">
+      <h2 id="how-h" data-i18n="howTitle">How to request an appointment</h2>
+      <p class="lead" data-i18n="howLead">Just three easy steps.</p>
+      <ol class="steps">
+        <li><strong data-i18n="s1t">Fill in the form</strong><span data-i18n="s1d">Write your name, phone number and preferred day.</span></li>
+        <li><strong data-i18n="s2t">Send your request</strong><span data-i18n="s2d">Press the "Request Appointment" button.</span></li>
+        <li><strong data-i18n="s3t">Confirmation from the clinic</strong><span data-i18n="s3d">The clinic will call you and tell you the time.</span></li>
+      </ol>
+      <p class="sample" style="margin-top:14px" data-i18n="howNote">This is only a demo, so no request is sent anywhere right now.</p>
+    </div>
+  </section>
+
+  <!-- 5. ASK SAATHI -->
+  <section aria-labelledby="saathi-h">
+    <div class="wrap">
+      <h2 id="saathi-h" data-i18n="saathiTitle">Ask Saathi – your helper for practical questions</h2>
+      <div class="saathi">
+        <span class="badge" data-i18n="saathiBadge">Live demo</span>
+        <p data-i18n="saathiIntro">Ask Saathi is an automated assistant that answers only practical questions.</p>
+        <ul class="chips" aria-label="Examples of practical questions" data-i18n-aria="chipsAria">
+          <li data-i18n="chip1">Timings</li>
+          <li data-i18n="chip2">Fees</li>
+          <li data-i18n="chip3">Directions</li>
+          <li data-i18n="chip4">Documents to bring</li>
+          <li data-i18n="chip5">How booking works</li>
+        </ul>
+        <div class="chat-demo">
+          <div id="chatLog" class="chat-log" aria-live="polite">
+            <div class="bubble bot" data-i18n="chatMsg">Hello! Ask me about timings, fees, address, documents or booking.</div>
+          </div>
+          <form id="chatForm" class="chat-row" autocomplete="off">
+            <label for="saathi-input" class="sr-only" data-i18n="chatLabel">Ask Saathi</label>
+            <input id="saathi-input" type="text" maxlength="300" placeholder="Type your question..." data-i18n-ph="chatPh">
+            <button class="btn" id="chatSend" type="submit" data-i18n="chatSend">Send</button>
+          </form>
+          <div class="saathi-stats" id="saathiStats" aria-live="polite"></div>
+        </div>
+        <div class="nomed" data-i18n="nomed">Ask Saathi gives no medical advice. Ask the doctor any question about illness, medicine or treatment.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6. EMERGENCY (always shown in English and Hindi) -->
+  <section class="emergency" aria-label="Emergency notice / आपातकालीन सूचना">
+    <div class="wrap">
+      <div class="box" role="alert">
+        <div class="sym" aria-hidden="true">!</div>
+        <div>
+          <p lang="en">In an emergency, do not wait. Go to the nearest hospital or call 112.</p>
+          <p lang="hi">आपातकाल में इंतज़ार न करें। सबसे नज़दीकी अस्पताल जाएँ या 112 पर कॉल करें।</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7. CLINIC DETAILS -->
+  <section class="alt" aria-labelledby="details-h">
+    <div class="wrap">
+      <h2 id="details-h" data-i18n="detTitle">Clinic details</h2>
+      <p class="sample" data-i18n="detNote">All details below are samples (not real), for the demo only.</p>
+      <div class="two-col">
+        <dl class="details">
+          <div><dt data-i18n="dtDoctor">Doctor</dt><dd data-i18n="ddDoctor">Dr. Sample Name (sample)</dd></div>
+          <div><dt data-i18n="dtSpec">Speciality</dt><dd data-i18n="ddSpec">Neurosurgery clinic (sample)</dd></div>
+          <div><dt data-i18n="dtAddr">Address</dt><dd data-i18n="ddAddr">Sample Address, Meerut</dd></div>
+          <div><dt data-i18n="dtTime">Timings</dt><dd data-i18n="ddTime">Mon-Sat 10 am to 2 pm</dd></div>
+          <div><dt data-i18n="dtFee">Fees</dt><dd data-i18n="ddFee">Consultation fee: Rs 800 (sample)</dd></div>
+          <div><dt data-i18n="dtPhone">Phone</dt><dd data-i18n="ddPhone">00000 00000 (sample)</dd></div>
+          <div style="grid-column:1/-1"><dt data-i18n="dtDocs">Documents to bring</dt><dd data-i18n="ddDocs">Photo ID, old reports and prescriptions, if any (sample list)</dd></div>
+        </dl>
+        <div class="map" role="img" aria-label="Map placeholder" data-i18n-aria="mapAria">
+          <div><span aria-hidden="true">&#128506;&#65039;</span> <span data-i18n="mapLabel">Map placeholder</span><small data-i18n="mapSub">The clinic map will appear here</small></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 8. FORM -->
+  <section id="request" aria-labelledby="form-h">
+    <div class="wrap" style="max-width:640px">
+      <h2 id="form-h" data-i18n="formTitle">Request an appointment</h2>
+      <p class="lead" data-i18n="formLead">We only need three things. Please do not write any medical details.</p>
+
+      <form id="apptForm" novalidate>
+        <div class="field" id="f-name">
+          <label for="name"><span data-i18n="lblName">Your name</span></label>
+          <input type="text" id="name" name="name" autocomplete="name" placeholder="For example: Sample Name" data-i18n-ph="phName" required>
+          <div class="err" data-i18n="errName">Please enter your name.</div>
+        </div>
+
+        <div class="field" id="f-phone">
+          <label for="phone"><span data-i18n="lblPhone">Phone number</span> <small data-i18n="hintPhone">(10 digits)</small></label>
+          <input type="tel" id="phone" name="phone" inputmode="numeric" autocomplete="tel" maxlength="10" placeholder="10-digit mobile number" data-i18n-ph="phPhone" required>
+          <div class="err" data-i18n="errPhone">Please enter a valid 10-digit phone number.</div>
+        </div>
+
+        <div class="field" id="f-day">
+          <label for="day" data-i18n="lblDay">Preferred day</label>
+          <select id="day" name="day" required>
+            <option value="" data-i18n="optDay0">-- Choose a day --</option>
+            <option value="mon" data-i18n="optMon">Monday</option>
+            <option value="tue" data-i18n="optTue">Tuesday</option>
+            <option value="wed" data-i18n="optWed">Wednesday</option>
+            <option value="thu" data-i18n="optThu">Thursday</option>
+            <option value="fri" data-i18n="optFri">Friday</option>
+            <option value="sat" data-i18n="optSat">Saturday</option>
+          </select>
+          <div class="err" data-i18n="errDay">Please choose a day.</div>
+        </div>
+
+        <div class="field" id="f-consent">
+          <div class="consent">
+            <input type="checkbox" id="consent" name="consent" required>
+            <label for="consent" data-i18n="consent">I agree that the clinic may contact me on my name and phone number about this appointment request.</label>
+          </div>
+          <div class="err" data-i18n="errConsent">Your consent is needed to continue.</div>
+        </div>
+
+        <button class="btn" type="submit" data-i18n="submit">Request Appointment</button>
+        <div class="thanks" id="thanks" role="status" aria-live="polite" tabindex="-1" data-i18n="thanks">
+          Thank you, this is a demo. Your details were not sent anywhere.
+        </div>
+        <p class="form-note" data-i18n="formNote">Demo form: this information is not sent to any server or anywhere else.</p>
+      </form>
+    </div>
+  </section>
+
+</main>
+
+<!-- 9. FOOTER -->
+<footer>
+  <div class="wrap">
+    <p><strong data-i18n="privLabel">Privacy note:</strong> <span data-i18n="privText">On this website we only ask for your name, phone number and preferred day. No medical details are collected. In this demo, form details are not saved or sent anywhere.</span></p>
+    <span class="demo-line" data-i18n="demoLine">Demo project. Not a real clinic.</span>
+  </div>
+</footer>
+
+<script>
+(function () {
+  /* ------------------------------------------------------------------
+     ALL PAGE TEXT LIVES HERE. Edit the English (en) or Hindi (hi) text
+     below; keys match the data-i18n attributes in the HTML.
+     (The emergency notice is the only text kept in the HTML itself,
+      because it must always show in both languages.)
+     ------------------------------------------------------------------ */
+  var translations = {
+    en: {
+      pageTitle: "ClinicSaathi – Demo Landing Page",
+      langAria: "Language",
+      tag: "Demo",
+
+      eyebrow: "Meerut & nearby towns",
+      heroTitle: "Planning a clinic visit in Meerut? See the important information before you go.",
+      heroSub: "Timings, fees, address and the documents to bring – all in one place, in simple language. Take a quick look before you travel.",
+      heroBtn: "Request an Appointment",
+      heroNote: "You only need to share your name, phone number and preferred day. No medical details.",
+
+      probTitle: "Travelling without information is tiring",
+      probLead: "Families often travel from far-away towns and villages. Many only find out after they arrive that:",
+      p1t: "They don't know the timings",
+      p1d: "They don't know when the clinic opens or which days it is closed.",
+      p2t: "They don't know the fees",
+      p2d: "Not knowing the consultation fee in advance adds to the worry.",
+      p3t: "What should they bring?",
+      p3d: "If they forget which papers and old reports are needed, they have to make another trip.",
+      probClose: "ClinicSaathi helps you see the practical information you need before you leave home.",
+
+      whatTitle: "What you will find on this website",
+      whatLead: "Five simple things, with no login and no hassle.",
+      w1t: "Doctor's profile", w1d: "Clear, direct information about the doctor.",
+      w2t: "Address and map", w2d: "How to reach the clinic – the address and a map in one place.",
+      w3t: "Timings", w3d: "Which days, and from what time to what time.",
+      w4t: "Fees", w4d: "Know the consultation fee in advance, with no surprise costs.",
+      w5t: "Documents to bring", w5d: "A single list of what to keep with you before you come.",
+
+      howTitle: "How to request an appointment",
+      howLead: "Just three easy steps.",
+      s1t: "Fill in the form", s1d: "Write your name, phone number and preferred day.",
+      s2t: "Send your request", s2d: "Press the \"Request Appointment\" button.",
+      s3t: "Confirmation from the clinic", s3d: "The clinic will call you and tell you the time.",
+      howNote: "This is only a demo, so no request is sent anywhere right now.",
+
+      saathiTitle: "Ask Saathi – your helper for practical questions",
+      saathiBadge: "Live demo",
+      saathiIntro: "Ask Saathi is an automated assistant that answers only practical questions. It uses sample clinic details.",
+      chipsAria: "Examples of practical questions",
+      chip1: "Timings", chip2: "Fees", chip3: "Directions", chip4: "Documents to bring", chip5: "How booking works",
+      chatMsg: "Hello! Ask me about timings, fees, address, documents or booking.",
+      chatLabel: "Ask Saathi",
+      chatPh: "Type your question...",
+      chatSend: "Send",
+      chatThinking: "Saathi is typing...",
+      chatLimit: "You have used all 5 free questions for this demo. Please use the appointment form or call the clinic.",
+      chatError: "Sorry, something went wrong. Please try again in a moment.",
+      statsAnswered: "Practical questions answered so far:",
+      statsTop: "Most asked topic:",
+      topic_timings: "Timings", topic_fees: "Fees", topic_directions: "Directions", topic_documents: "Documents", topic_booking: "Booking",
+      chatLeft: "Questions left:",
+      nomed: "Ask Saathi gives no medical advice. Ask the doctor any question about illness, medicine or treatment.",
+
+      detTitle: "Clinic details",
+      detNote: "All details below are samples (not real), for the demo only.",
+      dtDoctor: "Doctor", ddDoctor: "Dr. Sample Name (sample)",
+      dtSpec: "Speciality", ddSpec: "Neurosurgery clinic (sample)",
+      dtAddr: "Address", ddAddr: "Sample Address, Meerut",
+      dtTime: "Timings", ddTime: "Mon-Sat 10 am to 2 pm",
+      dtFee: "Fees", ddFee: "Consultation fee: Rs 800 (sample)",
+      dtPhone: "Phone", ddPhone: "00000 00000 (sample)",
+      dtDocs: "Documents to bring", ddDocs: "Photo ID, old reports and prescriptions, if any (sample list)",
+      mapAria: "Map placeholder",
+      mapLabel: "Map placeholder",
+      mapSub: "The clinic map will appear here",
+
+      formTitle: "Request an appointment",
+      formLead: "We only need three things. Please do not write any medical details.",
+      lblName: "Your name",
+      phName: "For example: Sample Name",
+      errName: "Please enter your name.",
+      lblPhone: "Phone number",
+      hintPhone: "(10 digits)",
+      phPhone: "10-digit mobile number",
+      errPhone: "Please enter a valid 10-digit phone number.",
+      lblDay: "Preferred day",
+      optDay0: "-- Choose a day --",
+      optMon: "Monday", optTue: "Tuesday", optWed: "Wednesday", optThu: "Thursday", optFri: "Friday", optSat: "Saturday",
+      errDay: "Please choose a day.",
+      consent: "I agree that the clinic may contact me on my name and phone number about this appointment request.",
+      errConsent: "Your consent is needed to continue.",
+      submit: "Request Appointment",
+      thanks: "Thank you, this is a demo. Your details were not sent anywhere.",
+      formNote: "Demo form: this information is not sent to any server or anywhere else.",
+
+      privLabel: "Privacy note:",
+      privText: "On this website we only ask for your name, phone number and preferred day. No medical details are collected. In this demo, form details are not saved or sent anywhere.",
+      demoLine: "Demo project. Not a real clinic."
+    },
+
+    hi: {
+      pageTitle: "ClinicSaathi – डेमो लैंडिंग पेज",
+      langAria: "भाषा",
+      tag: "डेमो",
+
+      eyebrow: "मेरठ और आसपास के शहर",
+      heroTitle: "मेरठ में क्लिनिक जाने की योजना बना रहे हैं? ज़रूरी जानकारी पहले ही देख लीजिए।",
+      heroSub: "समय, फ़ीस, पता और साथ ले जाने वाले दस्तावेज़ – सब कुछ एक जगह, आसान भाषा में। यात्रा से पहले बस एक बार देख लें।",
+      heroBtn: "अपॉइंटमेंट के लिए अनुरोध करें",
+      heroNote: "आपको बस अपना नाम, फ़ोन नंबर और पसंद का दिन बताना है। कोई चिकित्सा संबंधी जानकारी नहीं देनी है।",
+
+      probTitle: "बिना जानकारी के सफ़र बहुत थका देता है",
+      probLead: "अक्सर परिवार दूर के शहरों और गाँवों से आते हैं। कई बार पहुँचने के बाद ही पता चलता है कि:",
+      p1t: "समय पता नहीं होता",
+      p1d: "क्लिनिक कब खुलता है और किस दिन बंद रहता है, यह पहले से पता नहीं होता।",
+      p2t: "फ़ीस का अंदाज़ा नहीं होता",
+      p2d: "परामर्श शुल्क कितना है, यह पहले से न पता हो तो चिंता बढ़ जाती है।",
+      p3t: "साथ क्या लाना है?",
+      p3d: "कौन-से कागज़ात और पुरानी रिपोर्ट चाहिए, यह याद न रहे तो दोबारा चक्कर लगाना पड़ता है।",
+      probClose: "ClinicSaathi का मकसद है कि आप घर से निकलने से पहले ही ज़रूरी व्यावहारिक जानकारी देख लें।",
+
+      whatTitle: "इस वेबसाइट पर क्या मिलेगा",
+      whatLead: "पाँच आसान चीज़ें, बिना लॉगिन और बिना झंझट के।",
+      w1t: "डॉक्टर की प्रोफ़ाइल", w1d: "डॉक्टर के बारे में साफ़ और सीधी जानकारी।",
+      w2t: "पता और नक्शा", w2d: "क्लिनिक तक कैसे पहुँचें – पता और नक्शा एक जगह।",
+      w3t: "समय", w3d: "कौन-से दिन, कितने बजे से कितने बजे तक।",
+      w4t: "फ़ीस", w4d: "परामर्श शुल्क पहले से पता हो, कोई अनजाना खर्च नहीं।",
+      w5t: "साथ लाने वाले दस्तावेज़", w5d: "आने से पहले क्या-क्या साथ रखना है, एक ही सूची में।",
+
+      howTitle: "अपॉइंटमेंट का अनुरोध कैसे करें",
+      howLead: "सिर्फ़ तीन आसान कदम।",
+      s1t: "फ़ॉर्म भरें", s1d: "अपना नाम, फ़ोन नंबर और पसंद का दिन लिखें।",
+      s2t: "अनुरोध भेजें", s2d: "“अपॉइंटमेंट के लिए अनुरोध करें” बटन दबाएँ।",
+      s3t: "क्लिनिक से पुष्टि", s3d: "क्लिनिक आपको फ़ोन करके समय बताएगा।",
+      howNote: "यह सिर्फ़ एक डेमो है, इसलिए अभी कोई अनुरोध कहीं नहीं भेजा जाता।",
+
+      saathiTitle: "आस्क साथी – आपके व्यावहारिक सवालों का साथी",
+      saathiBadge: "लाइव डेमो",
+      saathiIntro: "आस्क साथी एक स्वचालित सहायक है, जो सिर्फ़ व्यावहारिक सवालों के जवाब देता है। यह नमूना क्लिनिक जानकारी इस्तेमाल करता है।",
+      chipsAria: "व्यावहारिक सवालों के उदाहरण",
+      chip1: "समय", chip2: "फ़ीस", chip3: "रास्ता / दिशा-निर्देश", chip4: "कौन-से दस्तावेज़ लाएँ", chip5: "बुकिंग कैसे होती है",
+      chatMsg: "नमस्ते! समय, फ़ीस, पता, दस्तावेज़ या बुकिंग के बारे में पूछें।",
+      chatLabel: "आस्क साथी",
+      chatPh: "अपना सवाल लिखें...",
+      chatSend: "भेजें",
+      chatThinking: "साथी लिख रहा है...",
+      chatLimit: "इस डेमो के 5 मुफ़्त सवाल पूरे हो गए। कृपया अपॉइंटमेंट फ़ॉर्म इस्तेमाल करें या क्लिनिक को कॉल करें।",
+      chatError: "माफ़ कीजिए, कुछ गड़बड़ हो गई। कृपया थोड़ी देर बाद फिर कोशिश करें।",
+      statsAnswered: "अब तक जवाब दिए गए व्यावहारिक सवाल:",
+      statsTop: "सबसे ज़्यादा पूछा गया विषय:",
+      topic_timings: "समय", topic_fees: "फ़ीस", topic_directions: "रास्ता", topic_documents: "दस्तावेज़", topic_booking: "बुकिंग",
+      chatLeft: "बचे हुए सवाल:",
+      nomed: "आस्क साथी कोई चिकित्सा सलाह नहीं देता। बीमारी, दवा या इलाज से जुड़े सवाल सिर्फ़ डॉक्टर से पूछें।",
+
+      detTitle: "क्लिनिक की जानकारी",
+      detNote: "नीचे दी गई सारी जानकारी नमूना (नकली) है, सिर्फ़ डेमो के लिए।",
+      dtDoctor: "डॉक्टर", ddDoctor: "डॉ. सैंपल नाम (नमूना)",
+      dtSpec: "विशेषता", ddSpec: "न्यूरोसर्जरी क्लिनिक (नमूना)",
+      dtAddr: "पता", ddAddr: "नमूना पता, मेरठ",
+      dtTime: "समय", ddTime: "सोमवार से शनिवार, सुबह 10 बजे से दोपहर 2 बजे तक",
+      dtFee: "फ़ीस", ddFee: "परामर्श शुल्क: ₹800 (नमूना)",
+      dtPhone: "फ़ोन", ddPhone: "00000 00000 (नमूना)",
+      dtDocs: "साथ लाने वाले दस्तावेज़", ddDocs: "फ़ोटो पहचान-पत्र, पुरानी रिपोर्ट और पर्चियाँ, अगर हों (नमूना सूची)",
+      mapAria: "नक्शे की जगह",
+      mapLabel: "नक्शे की जगह",
+      mapSub: "यहाँ क्लिनिक का नक्शा आएगा",
+
+      formTitle: "अपॉइंटमेंट का अनुरोध करें",
+      formLead: "हमें सिर्फ़ तीन चीज़ें चाहिए। कृपया कोई चिकित्सा जानकारी न लिखें।",
+      lblName: "आपका नाम",
+      phName: "जैसे: सैंपल नाम",
+      errName: "कृपया अपना नाम लिखें।",
+      lblPhone: "फ़ोन नंबर",
+      hintPhone: "(10 अंक)",
+      phPhone: "10 अंकों का मोबाइल नंबर",
+      errPhone: "कृपया सही 10 अंकों का फ़ोन नंबर लिखें।",
+      lblDay: "पसंद का दिन",
+      optDay0: "-- दिन चुनें --",
+      optMon: "सोमवार", optTue: "मंगलवार", optWed: "बुधवार", optThu: "गुरुवार", optFri: "शुक्रवार", optSat: "शनिवार",
+      errDay: "कृपया एक दिन चुनें।",
+      consent: "मैं सहमत हूँ कि इस अपॉइंटमेंट अनुरोध के लिए क्लिनिक मेरे नाम और फ़ोन नंबर पर मुझसे संपर्क कर सकता है।",
+      errConsent: "आगे बढ़ने के लिए आपकी सहमति ज़रूरी है।",
+      submit: "अपॉइंटमेंट के लिए अनुरोध करें",
+      thanks: "धन्यवाद, यह सिर्फ़ एक डेमो है। आपकी जानकारी कहीं नहीं भेजी गई।",
+      formNote: "डेमो फ़ॉर्म: यह जानकारी किसी सर्वर या किसी और जगह नहीं भेजी जाती।",
+
+      privLabel: "गोपनीयता नोट:",
+      privText: "इस वेबसाइट पर हम सिर्फ़ आपका नाम, फ़ोन नंबर और पसंद का दिन माँगते हैं। कोई चिकित्सा जानकारी नहीं ली जाती। इस डेमो में फ़ॉर्म की जानकारी कहीं सेव या भेजी नहीं जाती।",
+      demoLine: "डेमो प्रोजेक्ट। यह असली क्लिनिक नहीं है।"
+    }
+  };
+
+  var currentLang = 'en';
+
+  function applyLang(lang) {
+    if (!translations[lang]) lang = 'en';
+    currentLang = lang;
+    var t = translations[lang];
+
+    document.documentElement.lang = lang;       // 'en' or 'hi'
+    document.title = t.pageTitle;
+
+    Array.prototype.forEach.call(document.querySelectorAll('[data-i18n]'), function (el) {
+      var k = el.getAttribute('data-i18n');
+      if (t[k] !== undefined) el.textContent = t[k];
+    });
+    Array.prototype.forEach.call(document.querySelectorAll('[data-i18n-ph]'), function (el) {
+      var k = el.getAttribute('data-i18n-ph');
+      if (t[k] !== undefined) el.setAttribute('placeholder', t[k]);
+    });
+    Array.prototype.forEach.call(document.querySelectorAll('[data-i18n-aria]'), function (el) {
+      var k = el.getAttribute('data-i18n-aria');
+      if (t[k] !== undefined) el.setAttribute('aria-label', t[k]);
+    });
+
+    Array.prototype.forEach.call(document.querySelectorAll('.lang-btn'), function (btn) {
+      btn.setAttribute('aria-pressed', btn.getAttribute('data-lang') === lang ? 'true' : 'false');
+    });
+  }
+
+  Array.prototype.forEach.call(document.querySelectorAll('.lang-btn'), function (btn) {
+    btn.addEventListener('click', function () { applyLang(btn.getAttribute('data-lang')); });
+  });
+
+  /* ---------------- Demo form: validates, sends nothing ---------------- */
+  var form = document.getElementById('apptForm');
+  var thanks = document.getElementById('thanks');
+
+  function setBad(id, bad) {
+    document.getElementById(id).classList.toggle('bad', bad);
+  }
+
+  document.getElementById('phone').addEventListener('input', function () {
+    this.value = this.value.replace(/\D/g, '').slice(0, 10);
+  });
+
+  form.addEventListener('submit', function (e) {
+    e.preventDefault(); // Never sends data anywhere
+    thanks.classList.remove('show');
+
+    var nameOk = document.getElementById('name').value.trim().length > 1;
+    var phoneOk = /^\d{10}$/.test(document.getElementById('phone').value);
+    var dayOk = document.getElementById('day').value !== '';
+    var consentOk = document.getElementById('consent').checked;
+
+    setBad('f-name', !nameOk);
+    setBad('f-phone', !phoneOk);
+    setBad('f-day', !dayOk);
+    setBad('f-consent', !consentOk);
+
+    if (nameOk && phoneOk && dayOk && consentOk) {
+      form.reset();
+      thanks.classList.add('show');
+      thanks.focus();
+    } else {
+      var first = form.querySelector('.field.bad input, .field.bad select');
+      if (first) first.focus();
+    }
+  });
+
+
+  /* ---------------- Ask Saathi (calls /api/ask) ---------------- */
+  var visitorId;
+  try {
+    visitorId = localStorage.getItem('saathi_vid');
+    if (!visitorId) {
+      visitorId = (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : String(Date.now()) + '-' + Math.random().toString(16).slice(2);
+      localStorage.setItem('saathi_vid', visitorId);
+    }
+  } catch (err) {
+    visitorId = String(Date.now()) + '-' + Math.random().toString(16).slice(2);
+  }
+
+  var chatForm = document.getElementById('chatForm');
+  var chatInput = document.getElementById('saathi-input');
+  var chatSend = document.getElementById('chatSend');
+  var chatLog = document.getElementById('chatLog');
+  var statsBox = document.getElementById('saathiStats');
+  var lastStats = null, lastLeft = null;
+
+  function addBubble(text, cls) {
+    var d = document.createElement('div');
+    d.className = 'bubble ' + cls;
+    d.textContent = text;
+    chatLog.appendChild(d);
+    return d;
+  }
+
+  function renderStats() {
+    if (!lastStats) return;
+    var t = translations[currentLang];
+    var parts = [t.statsAnswered + ' ' + lastStats.answered];
+    if (lastStats.topTopic && t['topic_' + lastStats.topTopic]) parts.push(t.statsTop + ' ' + t['topic_' + lastStats.topTopic]);
+    if (lastLeft !== null) parts.push(t.chatLeft + ' ' + lastLeft);
+    statsBox.textContent = parts.join(' | ');
+  }
+  var _applyLang = applyLang;
+  applyLang = function (l) { _applyLang(l); renderStats(); };
+
+  fetch('/api/ask').then(function (r) { return r.json(); }).then(function (s) {
+    if (s && typeof s.answered === 'number') { lastStats = s; renderStats(); }
+  }).catch(function () {});
+
+  chatForm.addEventListener('submit', function (e) {
+    e.preventDefault();
+    var q = chatInput.value.trim();
+    if (q.length < 2) return;
+    var t = translations[currentLang];
+    addBubble(q, 'you');
+    chatInput.value = '';
+    chatSend.disabled = true;
+    var wait = addBubble(t.chatThinking, 'bot');
+
+    fetch('/api/ask', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ visitor_id: visitorId, language: currentLang, question: q })
+    }).then(function (r) {
+      return r.json().then(function (data) { return { status: r.status, data: data }; });
+    }).then(function (res) {
+      var tt = translations[currentLang];
+      if (res.status === 429) {
+        wait.textContent = tt.chatLimit; wait.className = 'bubble warn';
+        chatInput.disabled = true; // stays disabled: cap reached
+        lastLeft = 0; renderStats();
+        return;
+      }
+      if (res.status !== 200 || !res.data.answer) {
+        wait.textContent = tt.chatError; wait.className = 'bubble warn';
+        chatSend.disabled = false; return;
+      }
+      wait.textContent = res.data.answer;
+      if (res.data.refused) wait.className = 'bubble warn';
+      lastStats = res.data.stats; lastLeft = res.data.remaining; renderStats();
+      if (res.data.remaining <= 0) { chatInput.disabled = true; chatSend.disabled = true; }
+      else chatSend.disabled = false;
+    }).catch(function () {
+      wait.textContent = translations[currentLang].chatError; wait.className = 'bubble warn';
+      chatSend.disabled = false;
+    });
+  });
+
+
+  /* ---------------- Gentle scroll reveal ---------------- */
+  (function () {
+    if (!('IntersectionObserver' in window) || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    document.documentElement.classList.add('js');
+    var items = document.querySelectorAll('.card, .steps li, .saathi, dl.details div, #apptForm');
+    Array.prototype.forEach.call(items, function (el) { el.classList.add('reveal'); });
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) { if (en.isIntersecting) { en.target.classList.add('in'); io.unobserve(en.target); } });
+    }, { threshold: 0.12 });
+    Array.prototype.forEach.call(items, function (el) { io.observe(el); });
+  })();
+
+  applyLang('en'); // English by default
+})();
+</script>
+</body>
+</html>
