@@ -106,6 +106,32 @@ async function askGemini(question) {
   };
 }
 
+// Visit /api/ask?test=1 to see which step fails (no secrets are shown).
+async function selfTest() {
+  const out = { model: MODEL };
+  try {
+    const r = await sb('questions?select=id&limit=1');
+    out.supabase_read = r.status;
+    if (!r.ok) out.supabase_read_msg = (await r.text()).slice(0, 200);
+  } catch (e) { out.supabase_read = 'error: ' + e.message; }
+  try {
+    const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-goog-api-key': GEMINI_API_KEY },
+      body: JSON.stringify({ contents: [{ role: 'user', parts: [{ text: 'Say hi' }] }], generationConfig: { maxOutputTokens: 20 } })
+    });
+    out.gemini = r.status;
+    if (!r.ok) out.gemini_msg = (await r.text()).slice(0, 300);
+  } catch (e) { out.gemini = 'error: ' + e.message; }
+  try {
+    const r = await sb('questions', { method: 'POST', headers: { Prefer: 'return=minimal' },
+      body: JSON.stringify({ visitor_id: 'selftest', language: 'en', topic: 'test', input: 'test', output: 'test' }) });
+    out.supabase_write = r.status;
+    if (!r.ok) out.supabase_write_msg = (await r.text()).slice(0, 200);
+  } catch (e) { out.supabase_write = 'error: ' + e.message; }
+  return out;
+}
+
 module.exports = async function handler(req, res) {
   try {
     if (!GEMINI_API_KEY || !SUPABASE_URL || !SUPABASE_SERVICE_KEY) {
@@ -113,6 +139,7 @@ module.exports = async function handler(req, res) {
     }
 
     if (req.method === 'GET') {
+      if (req.query && req.query.test === '1') return res.status(200).json(await selfTest());
       return res.status(200).json(await getStats());
     }
     if (req.method !== 'POST') return res.status(405).json({ error: 'method_not_allowed' });
