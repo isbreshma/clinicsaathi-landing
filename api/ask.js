@@ -6,6 +6,15 @@ const SUPABASE_URL = process.env.SUPABASE_URL;
 const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_KEY;
 const MODEL = process.env.GEMINI_MODEL || 'gemini-3.8-flash';
 
+const FALLBACK_MODEL = process.env.GEMINI_FALLBACK_MODEL || 'gemini-3.5-flash-lite';
+
+// First safety layer: obvious health words are refused here, WITHOUT calling the AI at all.
+const HEALTH_EN = /\b(pain|ache|headache|fever|medicine|medicines|medication|tablet|tablets|pill|pills|drug|dose|dosage|symptom|symptoms|disease|illness|sick|infection|cancer|tumou?r|stroke|seizure|fits|migraine|vomit|vomiting|nausea|dizzy|dizziness|bleeding|blood pressure|diagnos\w*|treatment|cure|surgery|operation|injury|paralysis|numbness|swelling|scan result|mri result|am i dying|suicid\w*)\b/i;
+const HEALTH_HI = ['दर्द', 'बुखार', 'दवा', 'दवाई', 'गोली', 'इलाज', 'सर्जरी', 'ऑपरेशन', 'लक्षण', 'बीमारी', 'चक्कर', 'उल्टी', 'दौरा', 'मिर्गी', 'ट्यूमर', 'कैंसर', 'खून', 'सूजन', 'लकवा', 'सिरदर्द'];
+function looksLikeHealth(q) {
+  return HEALTH_EN.test(q) || HEALTH_HI.some(function (w) { return q.indexOf(w) !== -1; });
+}
+
 const MAX_REQUESTS_PER_VISITOR = 5;
 const MAX_OUTPUT_TOKENS = 300;
 const MAX_INPUT_CHARS = 300;
@@ -83,15 +92,15 @@ async function askGemini(question) {
       responseMimeType: 'application/json'
     }
   };
-  const call = async function (withThinking) {
+  const call = async function (model, withThinking) {
     const b = JSON.parse(JSON.stringify(body));
     if (withThinking) {
-      b.generationConfig.thinkingConfig = MODEL.includes('2.5')
+      b.generationConfig.thinkingConfig = model.includes('2.5')
         ? { thinkingBudget: 0 }
         : { thinkingLevel: 'low' };
     }
     return fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent`,
+      `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`,
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'x-goog-api-key': GEMINI_API_KEY },
@@ -99,17 +108,24 @@ async function askGemini(question) {
       }
     );
   };
-  let res = await call(true);
-  if (res.status === 400) res = await call(false); // model may not accept the thinking setting
-  if ([429, 500, 502, 503, 504].includes(res.status)) {   // busy: wait a moment and try once more
-    await new Promise(function (r) { setTimeout(r, 1200); });
-    res = await call(true);
+  const wait = function (ms) { return new Promise(function (r) { setTimeout(r, ms); }); };
+
+  // Try the main model (twice if busy), then the backup model.
+  let res = null;
+  let lastMsg = '';
+  const models = [MODEL, FALLBACK_MODEL];
+  for (let m = 0; m < models.length; m++) {
+    for (let attempt = 0; attempt < 2; attempt++) {
+      res = await call(models[m], true);
+      if (res.status === 400) res = await call(models[m], false); // model may not accept the thinking setting
+      if (res.ok) break;
+      try { lastMsg = (await res.text()).slice(0, 150); } catch (e) {}
+      if (![429, 500, 502, 503, 504].includes(res.status)) break; // not a "busy" error: stop retrying this model
+      await wait(900);
+    }
+    if (res && res.ok) break;
   }
-  if (!res.ok) {
-    let msg = '';
-    try { msg = (await res.text()).slice(0, 200); } catch (e) {}
-    throw new Error('Gemini error ' + res.status + ' ' + msg);
-  }
+  if (!res || !res.ok) throw new Error('Gemini error ' + (res ? res.status : '?') + ' ' + lastMsg);
   const data = await res.json();
   const text = data?.candidates?.[0]?.content?.parts?.[0]?.text || '{}';
   let parsed;
@@ -178,7 +194,12 @@ module.exports = async function handler(req, res) {
       return res.status(429).json({ error: 'limit_reached', limit: MAX_REQUESTS_PER_VISITOR });
     }
 
-    const { parsed, inputTokens, outputTokens } = await askGemini(question);
+    let parsed, inputTokens = 0, outputTokens = 0;
+    if (looksLikeHealth(question)) {
+      parsed = { type: 'health' };            // no AI call needed
+    } else {
+      ({ parsed, inputTokens, outputTokens } = await askGemini(question));
+    }
 
     let answer, storedInput, topic;
     if (parsed.type === 'health') {
