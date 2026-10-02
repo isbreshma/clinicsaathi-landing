@@ -101,7 +101,15 @@ async function askGemini(question) {
   };
   let res = await call(true);
   if (res.status === 400) res = await call(false); // model may not accept the thinking setting
-  if (!res.ok) throw new Error('Gemini error ' + res.status);
+  if ([429, 500, 502, 503, 504].includes(res.status)) {   // busy: wait a moment and try once more
+    await new Promise(function (r) { setTimeout(r, 1200); });
+    res = await call(true);
+  }
+  if (!res.ok) {
+    let msg = '';
+    try { msg = (await res.text()).slice(0, 200); } catch (e) {}
+    throw new Error('Gemini error ' + res.status + ' ' + msg);
+  }
   const data = await res.json();
   const text = data?.candidates?.[0]?.content?.parts?.[0]?.text || '{}';
   let parsed;
@@ -115,7 +123,7 @@ async function askGemini(question) {
 }
 
 // Visit /api/ask?test=1 to see which step fails (no secrets are shown).
-async function selfTest() {
+async function selfTest(req) {
   const out = { model: MODEL };
   try {
     const r = await sb('questions?select=id&limit=1');
@@ -132,7 +140,7 @@ async function selfTest() {
     if (!r.ok) out.gemini_msg = (await r.text()).slice(0, 300);
   } catch (e) { out.gemini = 'error: ' + e.message; }
   try {
-    const g = await askGemini('What are the timings?');
+    const g = await askGemini((req && req.query && req.query.q) || 'What are the timings?');
     out.real_call = { type: g.parsed.type, topic: g.parsed.topic, answer: String(g.parsed.answer || '').slice(0, 80), inputTokens: g.inputTokens, outputTokens: g.outputTokens };
   } catch (e) { out.real_call = 'error: ' + e.message; }
   try {
@@ -151,7 +159,7 @@ module.exports = async function handler(req, res) {
     }
 
     if (req.method === 'GET') {
-      if (req.query && req.query.test === '1') return res.status(200).json(await selfTest());
+      if (req.query && req.query.test === '1') return res.status(200).json(await selfTest(req));
       return res.status(200).json(await getStats());
     }
     if (req.method !== 'POST') return res.status(405).json({ error: 'method_not_allowed' });
@@ -212,6 +220,7 @@ module.exports = async function handler(req, res) {
       stats
     });
   } catch (e) {
-    return res.status(500).json({ error: 'something_went_wrong' });
+    console.error('ask failed:', e && e.message);
+    return res.status(500).json({ error: 'something_went_wrong', detail: String((e && e.message) || '').slice(0, 200) });
   }
 };
