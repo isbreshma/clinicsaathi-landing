@@ -4,7 +4,7 @@
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 const SUPABASE_URL = process.env.SUPABASE_URL;
 const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_KEY;
-const MODEL = process.env.GEMINI_MODEL || 'gemini-2.5-flash';
+const MODEL = process.env.GEMINI_MODEL || 'gemini-3.8-flash';
 
 const MAX_REQUESTS_PER_VISITOR = 5;
 const MAX_OUTPUT_TOKENS = 300;
@@ -83,16 +83,24 @@ async function askGemini(question) {
       responseMimeType: 'application/json'
     }
   };
-  if (MODEL.includes('2.5-flash')) body.generationConfig.thinkingConfig = { thinkingBudget: 0 };
-
-  const res = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent`,
-    {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'x-goog-api-key': GEMINI_API_KEY },
-      body: JSON.stringify(body)
+  const call = async function (withThinking) {
+    const b = JSON.parse(JSON.stringify(body));
+    if (withThinking) {
+      b.generationConfig.thinkingConfig = MODEL.includes('2.5')
+        ? { thinkingBudget: 0 }
+        : { thinkingLevel: 'low' };
     }
-  );
+    return fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-goog-api-key': GEMINI_API_KEY },
+        body: JSON.stringify(b)
+      }
+    );
+  };
+  let res = await call(true);
+  if (res.status === 400) res = await call(false); // model may not accept the thinking setting
   if (!res.ok) throw new Error('Gemini error ' + res.status);
   const data = await res.json();
   const text = data?.candidates?.[0]?.content?.parts?.[0]?.text || '{}';
@@ -123,6 +131,10 @@ async function selfTest() {
     out.gemini = r.status;
     if (!r.ok) out.gemini_msg = (await r.text()).slice(0, 300);
   } catch (e) { out.gemini = 'error: ' + e.message; }
+  try {
+    const g = await askGemini('What are the timings?');
+    out.real_call = { type: g.parsed.type, topic: g.parsed.topic, answer: String(g.parsed.answer || '').slice(0, 80), inputTokens: g.inputTokens, outputTokens: g.outputTokens };
+  } catch (e) { out.real_call = 'error: ' + e.message; }
   try {
     const r = await sb('questions', { method: 'POST', headers: { Prefer: 'return=minimal' },
       body: JSON.stringify({ visitor_id: 'selftest', language: 'en', topic: 'test', input: 'test', output: 'test' }) });
